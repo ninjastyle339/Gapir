@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String   // bcrypt hash
+  avatar    String?
+  theme     Json?    // your theme engine's per-user settings
+  createdAt DateTime @default(now())
+
+  messages     Message[]
+  memberships  RoomMember[]
+  token RefreshToken[]
+  verificationTokens VerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  sentRequests FriendRequest[] @relation("sentRequests")
+  receivedRequests FriendRequest[] @relation("receivedRequests")
+
+  emailVerified Boolean @default(false)
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  name      String
+  isDM      Boolean  @default(false) // true = 1-on-1, false = group/channel
+  createdAt DateTime @default(now())
+
+  messages    Message[]
+  members     RoomMember[]
+}
+
+model RoomMember {
+  id       String   @id @default(uuid())
+  role     String   @default("member") // "owner" | "admin" | "member"
+  joinedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  room   Room   @relation(fields: [roomId], references: [id])
+  roomId String
+
+  @@unique([userId, roomId]) // can't join the same room twice
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+  room     Room   @relation(fields: [roomId], references: [id])
+  roomId   String
+}
+model FriendRequest {
+  id String @id @default(uuid())
+  status String @default("pending") //pending, accepted, or declined
+  createdAt DateTime @default(now())
+
+  sender User @relation("sentRequests", fields: [senderId], references: [id])
+  senderId String
+  receiver   User @relation("receivedRequests", fields: [receiverId], references: [id])
+  receiverId String
+  @@unique([senderId, receiverId])
+}
+model RefreshToken {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  expiresAt DateTime
+  revoked Boolean @default(false)
+  token String @unique
+}
+model VerificationToken {
+  id String @id @default(uuid())
+  token String @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+}
+model PasswordResetToken {
+  id String @id @default(uuid())
+  token String @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+}
