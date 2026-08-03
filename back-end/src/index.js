@@ -12,7 +12,13 @@ import "dotenv/config";
 import { authMiddleware } from "./middleware/auth.js";
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {cors: {origin: "https://gapir.vercel.app", credentials: true}});
+
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://gapir.vercel.app"
+];
+
+const io = new Server(httpServer, {cors: {origin: allowedOrigins, credentials: true}});
 
 io.use((socket, next) => {
     const token = socket.handshake.auth.token;
@@ -42,7 +48,7 @@ io.on("connection", (socket) => {
 
 app.use(express.json());
 app.use(cors({
-    origin: "https://gapir.vercel.app",
+    origin: allowedOrigins,
     credentials: true,
 }));
 app.use(cookieParser());

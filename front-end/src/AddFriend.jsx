@@ -10,11 +10,14 @@ import { API_URL } from "./config";
 const AddFriend = () => {
     const [text, setText] = useState("");
     const [status, setStatus] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const {authFetch} = useAuth();
     const handleSend = async () => {
+        setIsLoading(true);
         const lookupRes = await authFetch(`${API_URL}/users/lookup?email=${encodeURIComponent(text)}`);
         if(!lookupRes.ok){
             setStatus("No user found");
+            setIsLoading(false);
             return;
         }
         const user = await lookupRes.json();
@@ -26,9 +29,10 @@ const AddFriend = () => {
         if(requestRes.ok){
             setStatus("Friend request sent");
             setText("");
+            setIsLoading(false);
             return;
         } else setStatus("Couldn't send friend request");
-
+        setIsLoading(false);
     }
 
 
@@ -43,7 +47,7 @@ const AddFriend = () => {
                 <div className="add-friend-stuff-2">
                 <span>ID: </span>
                 <input value={text} onChange={e => setText(e.target.value)} type="text" placeholder={status === "" ? "Enter friends email" : status}/>
-                <div className="add-friend-button"><button onClick={handleSend}>Send</button></div>
+                <div className="add-friend-button"><button disabled={isLoading} onClick={handleSend}>{isLoading ? "Sending..." : "Send"}</button></div>
                 </div>
             </div>
         </div>

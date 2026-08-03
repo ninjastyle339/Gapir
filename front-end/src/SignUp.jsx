@@ -6,8 +6,10 @@ const SignUp = () => {
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     async function handleSignIn(){
+        setIsLoading(true);
         try {
             if(!email.includes("@")){
                 setError("Invalid email");
@@ -26,14 +28,17 @@ const SignUp = () => {
             });
             if(res.status == 400) {
                 setError("Email taken");
+                setIsLoading(false);
                 return;
             }
             if(res.status == 500){
+                setIsLoading(false);
                 setError("Something went wrong");
                 return;
             }
             navigate("/login");
         } catch(err){
+            setIsLoading(false);
             setError("Could not connect to server");
         }
     }
@@ -47,7 +52,9 @@ const SignUp = () => {
             <div className="username"><input type="text" placeholder="Enter username" value={username} onChange={e => setUsername(e.target.value)} /></div>
             <div className="password"><input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter password"/></div>
             <div className="sign-up">
-                <button onClick={() => handleSignIn()}>Sign Up</button>
+                <button className={isLoading ? "loading": ""} disabled={isLoading} onClick={() => handleSignIn()}>
+                    {isLoading ? <>Creating account... <span className="sign-up-spinner" ></span></> : "Sign up"}
+                </button>
             </div>
             <div className="sign-up-error-m">{error}</div>
             </div>

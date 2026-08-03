@@ -6,9 +6,11 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const {login} = useAuth();
     async function handleLogin(){
+        setIsLoading(true);
             if(!email.includes("@")){
                 setError("Invalid email");
                 return;
@@ -19,7 +21,10 @@ const Login = () => {
             }
             const success = await login(email, password);
             if(success) navigate("/");
-            else setError("Invalid credentials"); 
+            else{
+                setError("Invalid credentials");
+                setIsLoading(false);
+            } 
             
     }
     return (
@@ -31,8 +36,11 @@ const Login = () => {
             <div className="email"><input type="text" value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter email"/></div>
             <div className="password-2"><Link to ="/forgot-password"><div>Forgot password?</div></Link><input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter password"/> </div>
             <div className="sign-up">
-                <button onClick={() => handleLogin()}>Login</button>
+                <button className={isLoading ? "loading" : ""} disabled={isLoading} onClick={() => handleLogin()}>
+                    {isLoading ? <>Logging in... <span className="sign-up-spinner"></span> </> : "Login"}
+                </button>
             </div>
+            <div className="login-go-to-register"><h4>Don't have an account? <Link to ="/register"><span>Register</span></Link></h4></div>
             <div className="sign-up-error-m">{error}</div>
             </div>
         </div>

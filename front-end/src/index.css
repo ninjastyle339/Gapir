@@ -192,11 +192,18 @@ button {
   border: none;
   color: var(--bg-secondary);
   transition: transform 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .625rem;
   &:hover{
     background: var(--accent-hover);
     transform: scale(1.05);
   }
   font-weight: bolder;
+}
+.sign-up button.loading {
+  background: var(--accent-hover);
 }
 .sign-up-error-m {
   color: red;
@@ -1326,4 +1333,41 @@ input[type="range"], .clean-input {
 }
 .groupImg {
   border-radius: 1.25rem;
+}
+.login-go-to-register {
+  color: white;
+  & h4 {
+    font-weight: normal;
+  }
+
+  & span {
+    color: white;
+  }
+  & a {
+    text-decoration-color: white;
+  }
+}
+.sign-up-spinner {
+  border: 2px solid var(--accent-nord);
+  border-radius: 100%;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: inline-block;
+  position: relative;
+  animation: rotation 1s linear infinite;
+}
+.sign-up-spinner::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 50%;
+  width: 3px;
+  transform: translateX(-50%);
+  background: var(--accent-nord-light);
+}
+@keyframes rotation{
+  100% {
+    transform: rotate(360deg); 
+  }
 }
