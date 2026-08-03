@@ -1,10 +1,10 @@
 import {io} from "socket.io-client";
-
+import { API_URL } from "./config";
 let socket = null;
 
 export const connectSocket = (token) => {
     if(socket) return socket;
-    socket = io("http://localhost:3000/", {auth: {token}});
+    socket = io(`${API_URL}`, {auth: {token}});
     return socket;
 }
 export const getSocket = () => socket;
