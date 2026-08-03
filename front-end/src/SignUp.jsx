@@ -1,5 +1,6 @@
 import {useState, useEffect} from "react";
 import { useNavigate } from "react-router";
+import { API_URL } from "./config";
 const SignUp = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -16,7 +17,7 @@ const SignUp = () => {
                 setError("Password must be atleast 6 characters");
                 return;
             }
-            const res = await fetch("http://localhost:3000/users/register", {
+            const res = await fetch(`${API_URL}/users/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
